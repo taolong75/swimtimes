@@ -9,44 +9,18 @@ import plotly.express as px
 pd.set_option('display.max_columns', 20)
 pd.set_option('display.width', 200)
 
-st.set_page_config(page_title="Tao's Swim Times", layout="wide")
+st.set_page_config(page_title="Dragon Handy Swim Time Tool", layout="wide")
+st.subheader('Dragon Handy Swim Time Tool')
+st.write('© 2023 Tao Long. All rights reserved.')
 
-urls = [
-    "https://www.swimmingrank.com/cal/strokes/strokes_pc/DMAFRBLCO_meets.html", # Darron Long
-    "https://www.swimmingrank.com/cal/strokes/strokes_pc/IMALNBSCU_meets.html", # Ian Sun
-    "https://www.swimmingrank.com/cal/strokes/strokes_pc/HGERBBSDU_meets.html", # Heber Sun
-    "https://www.swimmingrank.com/cal/strokes/strokes_pc/RLYRABSCU_meets.html", # Ryan Sung
-    "https://www.swimmingrank.com/cal/strokes/strokes_pc/SJKVYBBCA_meets.html", # Skye Bailey
-    "https://www.swimmingrank.com/cal/strokes/strokes_pc/PLH1IBBCU_meets.html", # Phillip Bulankov
-    "https://www.swimmingrank.com/cal/strokes/strokes_pc/LHEROBBCY_meets.html", # Leo Byer
-    "https://www.swimmingrank.com/cal/strokes/strokes_pc/BHLTABFCA_meets.html", # Blake Farrell
-]
+with open('Data/urls.txt', 'r') as file:
+    urls = file.read().split("\n")
+    
+    # Remove the trailing comments
+    urls = [url.split("#")[0].strip() for url in urls if url.strip() != ""]
 
-# 2023 JO and FW time standards for Age 10 boys
-jofw_df = pd.DataFrame({
-    'Event': {
-        0: '100 L Back', 1: '100 L Breast', 2: '100 L Fly', 3: '100 L Free', 4: '100 Y Back',
-        5: '100 Y Breast', 6: '100 Y Fly', 7: '100 Y Free', 8: '100 Y IM', 9: '200 L Free',
-        10: '200 L IM', 11: '200 Y Free', 12: '200 Y IM', 13: '400 L Free', 14: '400 Y Free',
-        15: '50 L Back', 16: '50 L Breast', 17: '50 L Fly', 18: '50 L Free', 19: '50 Y Back',
-        20: '50 Y Breast', 21: '50 Y Fly', 22: '50 Y Free'
-    },
-    'JO': {
-        0: '1:30.89', 1: '1:42.69', 2: '1:34.29', 3: '1:19.49', 4: '1:18.89',
-        5: '1:28.99', 6: '1:22.69', 7: '1:09.69', 8: '1:18.89', 9: '2:49.89',
-        10: '3:14.29', 11: '2:29.39', 12: '2:50.99', 13: '5:59.49', 14: '6:37.09',
-        15: '42.99', 16: '46.99', 17: '40.19', 18: '35.49', 19: '36.99',
-        20: '40.99', 21: '35.39', 22: '30.99'
-    },
-    'FW': {
-        0: '1:25.69', 1: '1:37.89', 2: '1:27.89', 3: '1:15.19', 4: '1:14.89', 
-        5: '1:24.39', 6: '1:18.99', 7: '1:05.69', 8: '1:16.89', 9: '2:41.09', 
-        10: '3:04.09', 11: '2:21.89', 12: '2:45.29', 13: '5:37.19', 14: '6:23.19', 
-        15: '40.29', 16: '44.99', 17: '37.89', 18: '33.59', 19: '35.09', 
-        20: '39.09', 21: '33.69', 22: '29.59'
-    },
-})
-
+# JO and FW time standards
+jofw_df = pd.read_csv('Data/time_standard.csv')
 
 # First, let's define the function to apply the abbreviations
 
@@ -242,8 +216,10 @@ def main():
     for col in gridOptions['columnDefs']:
         if col['field'] == 'Event':
             col['maxWidth'] = event_col_width
+            col['minWidth'] = int(event_col_width * 0.8)
         else:
             col['maxWidth'] = 80  # Set width to 100px for all other columns
+            col['minWidth'] = 80
 
         if col['field'] != 'Event':
             col['cellClassRules'] = {
@@ -305,14 +281,19 @@ def main():
         for col in gridOptions['columnDefs']:
             if col['field'] == 'Event':
                 col['maxWidth'] = event_col_width  # Previously calculated width based on max string length
+                col['minWidth'] = int(event_col_width * 0.8)
             elif col['field'] == 'Swimmer':
                 col['maxWidth'] = 120
+                col['minWidth'] = 100
             elif col['field'] == 'Time':
                 col['maxWidth'] = 80
+                col['minWidth'] = 80
             elif col['field'] == 'Date':
                 col['maxWidth'] = 120
+                col['minWidth'] = 100
             elif col['field'] == 'Meet':
                 col['maxWidth'] = 300  # Set maxWidth to 150px
+                col['minWidth'] = 200
         
             if col['field'] == 'Time':
                 col['cellStyle'] = {"textAlign": "right"}  # Align numeric columns to the right
