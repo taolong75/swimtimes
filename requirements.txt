@@ -1,0 +1,6 @@
+streamlit
+streamlit-aggrid
+pandas
+plotly
+requests
+beautifulsoup4
